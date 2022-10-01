@@ -4,67 +4,83 @@ CONTACTS = {}
 def input_error(handler):
     def wrapper(*args, **kwargs):
         try:
-            handler(*args, **kwargs)
+            return handler(*args, **kwargs)
         except KeyError:
-            print("Enter user name")
+            return print("Enter user name")
         except ValueError:
-            print("Give me name and phone please")
+            return print("Give me name and phone please")
         except IndexError:
-            print("Give me name and phone please")
+            return print("Give me name and phone please")
+        except TypeError:
+            return print("Wrong command. Try again")
 
     return wrapper
 @input_error
 def main():
     while True:
-        user_input = input("Enter command: ")
+        user_input = input('Enter command: ')
+        answer = run_command(user_input.strip())
+        #print(answer)
+        if answer == 'Good bye!':
+            break
 
-        if user_input not in COMMANDS:
-            print("Wrong command, try again.")
-            continue
-        COMMANDS[user_input]()
+@input_error
+def run_command(user_command):
+    command = user_command
+    params = ''
+    for key in COMMANDS:
+        if user_command.lower().startswith(key):
+            command = key
+            params = user_command[len(command):]
+            break
+    if params:
+        return get_answer_function(command)(params)
+    else:
+        return get_answer_function(command)()
 
+def get_answer_function(answer):
+    return COMMANDS.get(answer, command_error)
+
+@input_error
+def command_error():
+    return "Wrong command. Try again"
 
 @input_error
 def hello_func():
-    print("How can I help you?")
+    return print("How can I help you?")
 
 @input_error
 def quit_func():
     print("Good bye!")
-    quit()
+    return quit()
 
 @input_error
-def add_contact():
-    contact = input("Enter your name and phone: ")
-    split_contct = contact.split()
+def add_contact(contact):
+    split_contct = contact.strip().split()
     name = split_contct[0]
     phone = split_contct[1]
     CONTACTS.update({name: phone})
-    print(CONTACTS)
-    print("New contact added.")
+    return print("New contact added.")
 
 @input_error
-def chandler():
-    name = input("Enter name: ")
-    phone = input("Enter phone: ")
+def chandler(name_and_phone):
+    existing_phone = name_and_phone.strip().split()
+    name = existing_phone[0]
+    phone = existing_phone[1]
     CONTACTS[name] = phone
-    print("Contact changed.")
+    return print("Contact changed.")
 
 @input_error
-def get_phone():
-    name = input("Enter name: ")
-    phone = CONTACTS.get(name)
+def get_phone(name):
+    phone = CONTACTS[name.strip()]
     print(phone)
-
-@input_error
-def find_contact():
-    name = input("Enter name: ")
-    print(name, CONTACTS[name])
+    return phone
 
 @input_error
 def show_all():
-    for contact in CONTACTS:
-        print(contact)
+    contacts = '\n'.join([f'{name} {telephone}' for name, telephone in CONTACTS.items()])
+
+    return print(contacts)
 
 COMMANDS = {
     "good bye": quit_func,
@@ -72,7 +88,6 @@ COMMANDS = {
     "exit": quit_func,
     "add": add_contact,
     "hello": hello_func,
-    "find": find_contact,
     "change": chandler,
     "phone": get_phone,
     "show all": show_all
