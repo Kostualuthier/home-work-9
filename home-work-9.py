@@ -6,13 +6,17 @@ def input_error(handler):
         try:
             return handler(*args, **kwargs)
         except KeyError:
-            return print("Enter user name")
+            print("Enter user name")
+            return "Enter user name"
         except ValueError:
-            return print("Give me name and phone please")
+            print("Give me name and phone please")
+            return "Give me name and phone please"
         except IndexError:
-            return print("Give me name and phone please")
+            print("Give me name and phone please")
+            return "Give me name and phone please"
         except TypeError:
-            return print("Wrong command. Try again")
+            print("Wrong command. Try again")
+            return "Wrong command. Try again"
 
     return wrapper
 @input_error
@@ -47,7 +51,8 @@ def command_error():
 
 @input_error
 def hello_func():
-    return print("How can I help you?")
+    print("How can I help you?")
+    return "How can I help you?"
 
 @input_error
 def quit_func():
@@ -60,7 +65,8 @@ def add_contact(contact):
     name = split_contct[0]
     phone = split_contct[1]
     CONTACTS.update({name: phone})
-    return print("New contact added.")
+    print("New contact added.")
+    return "New contact added."
 
 @input_error
 def chandler(name_and_phone):
@@ -68,7 +74,8 @@ def chandler(name_and_phone):
     name = existing_phone[0]
     phone = existing_phone[1]
     CONTACTS[name] = phone
-    return print("Contact changed.")
+    print("Contact changed.")
+    return "Contact changed."
 
 @input_error
 def get_phone(name):
